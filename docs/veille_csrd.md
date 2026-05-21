@@ -82,3 +82,42 @@ Exemples :
 - fournisseurs.
 
 Le scope 3 est souvent le plus complexe à mesurer car il nécessite la collecte de nombreuses données externes.
+
+---
+
+## 4. Intérêt de l’automatisation par l’IA
+
+La mise en conformité avec la CSRD représente une difficulté importante pour de nombreuses entreprises.  
+
+La collecte des données environnementales est souvent réalisée manuellement à partir :
+- de factures ;
+- de fichiers Excel ;
+- de documents PDF ;
+- de données logistiques ou énergétiques.
+
+Ce processus peut être long, coûteux et sujet aux erreurs.  
+
+L’intelligence artificielle permet d’automatiser une partie importante de ce travail grâce à :
+- l’OCR pour lire automatiquement les documents ;
+- les modèles de langage (LLM) pour analyser les informations ;
+- les systèmes RAG pour rechercher des données fiables ;
+- les agents IA pour orchestrer les différentes étapes du traitement.
+
+Le projet EDEN vise à automatiser :
+1. l’extraction des données environnementales ;
+2. le calcul des émissions carbone ;
+3. la génération de rapports de conformité CSRD.
+
+L’objectif est de faciliter le pilotage environnemental des entreprises tout en réduisant le temps de traitement des données.
+
+---
+
+## Conclusion
+
+La directive CSRD et les normes ESRS renforcent les exigences de transparence environnementale des entreprises.  
+
+Le suivi des émissions carbone devient un enjeu majeur nécessitant des outils capables de traiter de grandes quantités de données de manière fiable et automatisée.  
+
+Dans ce contexte, le projet EDEN propose une approche basée sur l’intelligence artificielle afin d’automatiser l’extraction, l’analyse et la génération de rapports environnementaux.  
+
+L’utilisation de technologies telles que l’OCR, le RAG, les bases vectorielles et les agents IA permet de construire un système capable d’assister efficacement les entreprises dans leur démarche de conformité climatique.
