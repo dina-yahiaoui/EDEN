@@ -1,44 +1,56 @@
-# Journal de bord — Projet EDEN
+# Semaine 1 — Onboarding & veille technique
 
-## Jour 1 — Initialisation du projet
-
-### Objectifs
-- Comprendre le contexte du projet EDEN
-- Découvrir les concepts techniques principaux
-- Structurer l’environnement de travail
+## Lundi
 
 ### Travail réalisé
-- Création du repository Git
-- Création de la branche `develop`
-- Mise en place de l’arborescence du projet :
-  - backend
-  - frontend
-  - notebooks
-  - docs
-  - data
-  - tests
-- Création de l’environnement virtuel Python
-- Initialisation du README
-- Début de veille sur :
+- Lecture du sujet du projet EDEN
+- Compréhension des objectifs du stage
+- Découverte des notions :
   - CSRD
-  - ESRS E1
+  - ESRS
+  - Scope 1/2/3
+
+### Difficultés
+- Compréhension globale du vocabulaire technique
+
+---
+
+## Mardi
+
+### Travail réalisé
+- Début de veille technique sur :
   - RAG
   - LangChain
   - LangGraph
   - OCR
+  - FastAPI
+- Recherche sur les facteurs d’émission et la base ADEME
 
 ### Concepts étudiés
-- Pipeline de données
-- Embeddings
-- Base vectorielle
-- Facteurs d’émission
-- Scope 1 / 2 / 3
+- embeddings
+- pipeline de données
+- base vectorielle
 
-### Difficultés rencontrées
-- Compréhension globale de l’architecture du projet
-- Compréhension du fonctionnement de LangGraph
+---
 
-### Prochaines étapes
-- Rédaction de la note de synthèse CSRD / ESRS E1
-- Premiers tests OCR
-- Premier notebook RAG
+## Mercredi
+
+### Travail réalisé
+- Création du repository Git
+- Création de la branche `develop`
+- Mise en place de la structure du projet
+- Création de l’environnement virtuel Python
+- Initialisation du README
+- Début de rédaction de la veille CSRD / ESRS E1
+
+### Difficultés
+- Compréhension de l’architecture globale du projet EDEN
+
+---
+
+## Jeudi
+
+### Travail prévu
+- Finalisation de la note de synthèse CSRD / ESRS E1
+- Organisation des notebooks techniques
+- Début des premiers tests LangChain / RAG
