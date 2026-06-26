@@ -44,6 +44,13 @@ https://python.langchain.com/
 Définition simple :
 
 LangGraph est une extension de LangChain qui permet de créer des agents IA sous forme de graphe.
+| LangChain          | LangGraph                  |
+| ------------------ | -------------------------- |
+| Fournit les outils | Organise le déroulement    |
+| Appelle un LLM     | Enchaîne plusieurs étapes  |
+| Charge un PDF      | Décide quel chemin suivre  |
+| Fait un RAG        | Gère la logique de l'agent |
+
 
 ## 4. Embeddings
 
