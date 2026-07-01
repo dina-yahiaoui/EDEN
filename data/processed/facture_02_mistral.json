@@ -1,0 +1,11 @@
+{
+    "electricity_kwh": 2330,
+    "gas_m3": null,
+    "waste_tons": null,
+    "logistics_km": null,
+    "invoice_number": "129000818356",
+    "invoice_date": "2022-08-17",
+    "billing_period": "17/08/2021 au 08/08/2022",
+    "supplier": "TotalEnergies",
+    "amount_total": 504.42
+}

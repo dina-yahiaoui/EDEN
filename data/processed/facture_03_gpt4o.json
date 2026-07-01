@@ -1,0 +1,13 @@
+```json
+{
+  "electricity_kwh": 460,
+  "gas_m3": null,
+  "waste_tons": null,
+  "logistics_km": null,
+  "invoice_number": "128001949854",
+  "invoice_date": "16 août 2024",
+  "billing_period": "19/07/24 au 15/08/24",
+  "supplier": "TotalEnergies",
+  "amount_total": 129.99
+}
+```

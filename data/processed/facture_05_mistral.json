@@ -1,0 +1,11 @@
+{
+    "electricity_kwh": null,
+    "gas_m3": null,
+    "waste_tons": null,
+    "logistics_km": null,
+    "invoice_number": null,
+    "invoice_date": null,
+    "billing_period": null,
+    "supplier": null,
+    "amount_total": null
+}

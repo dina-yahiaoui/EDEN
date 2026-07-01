@@ -1,0 +1,13 @@
+```json
+{
+  "electricity_kwh": 726,
+  "gas_m3": null,
+  "waste_tons": null,
+  "logistics_km": null,
+  "invoice_number": "L3-2026-3005",
+  "invoice_date": null,
+  "billing_period": "01/13/2026 - 30/13/2026",
+  "supplier": "EKWATEUR STYLE",
+  "amount_total": 199.55
+}
+```

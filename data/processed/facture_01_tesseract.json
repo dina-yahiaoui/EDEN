@@ -1,0 +1,11 @@
+{
+    "electricity_kwh": 215,
+    "gas_m3": null,
+    "waste_tons": null,
+    "logistics_km": null,
+    "invoice_number": "2322030161005917",
+    "invoice_date": "01/03/2022",
+    "billing_period": "23/01/2022 — 23/02/2022",
+    "supplier": "IBERDROLA ENERGIE FRANCE S.A.S.",
+    "amount_total": 42.12
+}

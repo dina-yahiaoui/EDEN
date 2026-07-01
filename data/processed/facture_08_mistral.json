@@ -1,0 +1,11 @@
+{
+    "electricity_kwh": 249,
+    "gas_m3": null,
+    "waste_tons": null,
+    "logistics_km": null,
+    "invoice_number": "L3-2026-3001",
+    "invoice_date": null,
+    "billing_period": "01/09/2026 - 30/09/2026",
+    "supplier": "IBERDROLA",
+    "amount_total": 88.48
+}

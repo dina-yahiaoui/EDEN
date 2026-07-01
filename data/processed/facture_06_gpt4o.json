@@ -1,0 +1,13 @@
+```json
+{
+  "electricity_kwh": 254,
+  "gas_m3": null,
+  "waste_tons": null,
+  "logistics_km": null,
+  "invoice_number": "L3-2026-3003",
+  "invoice_date": null,
+  "billing_period": "01/11/2026 - 30/11/2026",
+  "supplier": "IBERDROLA STYLE",
+  "amount_total": 81.62
+}
+```

@@ -1,0 +1,13 @@
+```json
+{
+  "electricity_kwh": 654,
+  "gas_m3": null,
+  "waste_tons": null,
+  "logistics_km": null,
+  "invoice_number": "EF-2026-1004",
+  "invoice_date": "19/11/2026",
+  "billing_period": "01/04/2026 - 28/04/2026",
+  "supplier": "ÉNERGIE FRANCE",
+  "amount_total": 194.78
+}
+```

@@ -1,0 +1,13 @@
+```json
+{
+  "electricity_kwh": 438,
+  "gas_m3": null,
+  "waste_tons": null,
+  "logistics_km": null,
+  "invoice_number": "L2-2026-2002",
+  "invoice_date": null,
+  "billing_period": "01/07/2026 - 30/07/2026",
+  "supplier": "ENGIE STYLE",
+  "amount_total": 133.68
+}
+```

@@ -1,0 +1,11 @@
+{
+    "electricity_kwh": 304,
+    "gas_m3": null,
+    "waste_tons": null,
+    "logistics_km": null,
+    "invoice_number": "L2-2026-2005",
+    "invoice_date": null,
+    "billing_period": "01/010/2026 - 30/010/2026",
+    "supplier": "TOTALENERGIES",
+    "amount_total": 87.73
+}

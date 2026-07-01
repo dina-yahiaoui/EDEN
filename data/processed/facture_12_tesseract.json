@@ -1,0 +1,11 @@
+{
+    "electricity_kwh": 741,
+    "gas_m3": null,
+    "waste_tons": null,
+    "logistics_km": null,
+    "invoice_number": "L2-2026-2001",
+    "invoice_date": null,
+    "billing_period": "01/06/2026 - 30/06/2026",
+    "supplier": "ENGIE",
+    "amount_total": 194.87
+}
