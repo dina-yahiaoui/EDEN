@@ -117,8 +117,11 @@ Mistral OCR reste une très bonne alternative, notamment pour une future version
 
 ## Conclusion
 
-Le benchmark montre que GPT-4o Vision est le meilleur choix pour le MVP EDEN, car il combine OCR visuel et extraction structurée en une seule étape.
+Le benchmark montre que GPT-4o Vision offre les meilleurs résultats pour comprendre la structure des factures et extraire les informations métier. Il sera donc le modèle principal utilisé dans le projet EDEN.
 
-Mistral OCR est également performant, surtout pour produire une représentation Markdown fiable du document. Tesseract est utile pour comparaison, mais moins fiable sur des factures complexes.
+Cependant, conformément à l'architecture retenue pour le MVP, Tesseract sera également utilisé dans la phase d'ingestion afin de fournir une première extraction de texte. Les informations issues de Tesseract et l'analyse visuelle de GPT-4o Vision pourront être exploitées conjointement pour obtenir une extraction plus robuste.
 
-Pour le MVP, EDEN utilisera donc prioritairement GPT-4o Vision pour l’extraction des données depuis les factures.
+Les données extraites seront ensuite intégrées dans une base vectorielle Chroma, utilisées par le pipeline RAG, puis orchestrées par LangGraph pour produire le calcul des émissions carbone et le rapport CSRD.
+
+Ainsi, GPT-4o Vision reste le moteur principal d'extraction, tandis que Tesseract constitue un composant complémentaire du pipeline d'ingestion.
+
