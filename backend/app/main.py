@@ -11,7 +11,7 @@ app = FastAPI(
 app.include_router(extract_router)
 
 
-@app.get("/health")
+@app.get("/health", tags=["Health"])
 def health_check():
     """
     Vérifie que l'API EDEN fonctionne.
