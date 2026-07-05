@@ -2,3 +2,10 @@ pytesseract
 pdf2image
 pillow
 python-multipart
+chromadb
+python-dotenv
+langchain
+langchain-community
+pypdf
+langchain-text-splitters
+openai

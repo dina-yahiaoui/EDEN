@@ -62,12 +62,11 @@ def extract_invoice_number(text: str) -> str:
 
 def extract_invoice_date(text: str) -> str:
     patterns = [
-        r"Date\s*Facture\s*[:\-]?\s*(\d{2}/\d{2}/\d{4})",
-        r"FACTURE.*?DU\s*(\d{1,2})\s+([A-ZÉÛ]+)\s+(\d{4})",
+        r"FACTURE.*?DU\s+(\d{1,2}\s+[A-ZÉÛ]+\s+\d{4})",
+        r"Facture.*?(\d{2}/\d{2}/\d{4})",
     ]
 
     return find_first_match(text, patterns)
-
 
 def extract_contract_number(text: str) -> str:
     patterns = [
@@ -79,45 +78,82 @@ def extract_contract_number(text: str) -> str:
 
 
 def extract_customer_name(text: str) -> str:
+    """
+    Extrait le nom du client.
+    """
+
     patterns = [
-        r"Nom du client\s*:\s*M\.?\s*([A-ZÉÈÀÙÂÊÎÔÛÄËÏÖÜÇ\s\-]+)",
-        r"Titulaire\s*:\s*([A-ZÉÈÀÙÂÊÎÔÛÄËÏÖÜÇ\s\-]+)",
-        r"Titulaire du compte\s*:\s*\n\s*([A-ZÉÈÀÙÂÊÎÔÛÄËÏÖÜÇ\s\-]+)",
+        r"Nom du client\s*:\s*M\.?\s*([^\n\r]+)",
+        r"Titulaire du compte\s*:\s*([^\n\r]+)",
+        r"Titulaire\s*:\s*([^\n\r]+)",
     ]
 
-    return find_first_match(text, patterns).strip()
+    name = find_first_match(text, patterns)
 
+    # Nettoyage
+    name = re.sub(r"Lieu de consommation.*", "", name, flags=re.IGNORECASE)
+    name = re.sub(r"\s+", " ", name)
+
+    return name.strip()
 
 def extract_period_start(text: str) -> str:
-    pattern = r"(\d{2}/\d{2}/\d{4})\s*[—\-]\s*(\d{2}/\d{2}/\d{4})"
-    match = re.search(pattern, text)
+    patterns = [
+        r"Période du\s*(\d{2}/\d{2}/\d{2})\s*au\s*(\d{2}/\d{2}/\d{2})",
+        r"(\d{2}/\d{2}/\d{4})\s*[-–]\s*(\d{2}/\d{2}/\d{4})",
+    ]
 
-    if match:
-        return match.group(1)
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+
+        if match:
+            return match.group(1)
 
     return ""
 
 
 def extract_period_end(text: str) -> str:
-    pattern = r"(\d{2}/\d{2}/\d{4})\s*[—\-]\s*(\d{2}/\d{2}/\d{4})"
-    match = re.search(pattern, text)
+    patterns = [
+        r"Période du\s*(\d{2}/\d{2}/\d{2})\s*au\s*(\d{2}/\d{2}/\d{2})",
+        r"(\d{2}/\d{2}/\d{4})\s*[-–]\s*(\d{2}/\d{2}/\d{4})",
+    ]
 
-    if match:
-        return match.group(2)
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+
+        if match:
+            return match.group(2)
 
     return ""
 
 
 def extract_consumption_kwh(text: str) -> float:
+    """
+    Extrait la consommation facturée en kWh.
+    Ignore la Consommation Annuelle de Référence.
+    """
+
     patterns = [
-        r"(\d+[,.]?\d*)\s*kWh",
-        r"Conso\s*\(KWh\).*?(\d+[,.]?\d*)",
+        # Tableau de consommation
+        r"Base\s+\d+\s+\d+\s+\d+\s+(\d+)\s+0[,\.]\d+",
+
+        # Ligne "Conso (KWh)"
+        r"Conso\s*\(KWh\).*?(\d+)",
+
+        # Fallback : dernier kWh rencontré
+        r"(\d+)\s*kWh",
     ]
 
-    value = find_first_match(text, patterns)
+    matches = []
 
-    return to_float(value)
+    for pattern in patterns:
+        matches = re.findall(pattern, text, re.IGNORECASE | re.DOTALL)
 
+        if matches:
+            if pattern == r"(\d+)\s*kWh":
+                return to_float(matches[-1])  # dernier kWh
+            return to_float(matches[0])
+
+    return 0.0
 
 def extract_amount_ht(text: str) -> float:
     patterns = [
