@@ -4,10 +4,6 @@ import tempfile
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
-from app.ocr.tesseract import extract_text_with_tesseract
-from app.ocr.parser import parse_invoice_text
-from app.rag.rag import index_invoice
-
 from app.rag.rag import ingest_knowledge
 from fastapi import Body
 from app.agents.graph import run_eden
@@ -20,8 +16,9 @@ router = APIRouter(
 @router.post("/")
 async def extract_invoice(file: UploadFile = File(...)):
     """
-    Reçoit une facture PDF, lance l'OCR Tesseract
-    et retourne le texte extrait.
+    Reçoit une facture PDF et la traite via le graphe EDEN (LangGraph) :
+    extraction GPT-4o Vision -> vérification -> calcul carbone ->
+    indexation RAG -> génération du rapport CSRD.
     """
 
     # Vérification du type de fichier
@@ -39,22 +36,21 @@ async def extract_invoice(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, temp_file)
             temp_path = Path(temp_file.name)
 
-        # OCR
-        ocr_text = extract_text_with_tesseract(str(temp_path))
-
-        # Parser
-        invoice_data = parse_invoice_text(ocr_text)
-
-        # Indexation de la facture
-        rag_result = index_invoice(invoice_data)
-
-        # Lancement de l'agent EDEN
-        eden_result = run_eden(invoice_data)
+        # Pipeline complet (extraction, vérification, calcul, indexation, génération)
+        final_state = run_eden(str(temp_path))
 
         return {
-            "message": "Invoice processed successfully.",
-            "rag": rag_result,
-            "eden": eden_result,
+            "message": "Invoice processed.",
+            "status": final_state.get("status"),
+            "a_verifier": final_state.get("a_verifier", False),
+            "raison_verification": final_state.get("raison_verification"),
+            "error": final_state.get("error"),
+            "invoice": final_state.get("invoice_data"),
+            "carbon": final_state.get("carbon_data"),
+            "rag": final_state.get("rag_result"),
+            "report": final_state.get("report"),
+            "report_path": final_state.get("report_path"),
+            "log": final_state.get("log", []),
         }
 
     finally:

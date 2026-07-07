@@ -2,12 +2,18 @@ import uuid
 
 from app.rag.chroma import ChromaManager
 from app.rag.chunking import split_documents
-from app.rag.ingestion import build_document
+from app.rag.ingestion import build_document, CONSUMPTION_FIELDS
 from app.rag.loaders import load_pdf
 
 
 INVOICE_COLLECTION = "energy-invoices"
-KNOWLEDGE_COLLECTION = "knowledge-base"
+KNOWLEDGE_COLLECTION = "reglementation"
+FACTORS_COLLECTION = "facteurs_emission"
+
+# Chroma Cloud refuse les ajouts au-dela d'un certain nombre
+# d'enregistrements par requete (quota du plan) : on decoupe donc tout
+# ajout en lots.
+ADD_BATCH_SIZE = 200
 
 
 def index_invoice(invoice_data: dict) -> dict:
@@ -52,12 +58,19 @@ def ingest_knowledge(pdf_path: str, document_name: str) -> dict:
 
     chroma = ChromaManager()
 
-    return chroma.add_chunks(
-        collection_name=KNOWLEDGE_COLLECTION,
-        ids=ids,
-        documents=texts,
-        metadatas=metadatas,
-    )
+    total = len(ids)
+    last_result = {"status": "success", "chunks": 0, "collection": KNOWLEDGE_COLLECTION}
+
+    for start in range(0, total, ADD_BATCH_SIZE):
+        end = min(start + ADD_BATCH_SIZE, total)
+        last_result = chroma.add_chunks(
+            collection_name=KNOWLEDGE_COLLECTION,
+            ids=ids[start:end],
+            documents=texts[start:end],
+            metadatas=metadatas[start:end],
+        )
+
+    return {**last_result, "chunks": total}
 
 
 def search_knowledge(query: str, n_results: int = 3) -> dict:
@@ -76,15 +89,30 @@ def search_knowledge(query: str, n_results: int = 3) -> dict:
 def retrieve_context(invoice_data: dict) -> str:
     """
     Recherche automatiquement les passages les plus pertinents
-    dans la base documentaire.
+    dans la base documentaire, à partir du schéma harmonisé produit par
+    l'extraction (electricity_kwh, gas_m3, waste_tons, logistics_km).
     """
 
     chroma = ChromaManager()
 
+    consumption_field = next(
+        (field for field in CONSUMPTION_FIELDS if invoice_data.get(field) is not None),
+        None,
+    )
+
+    if consumption_field:
+        quantity = invoice_data[consumption_field]
+        unit = CONSUMPTION_FIELDS[consumption_field]
+        consumption_lines = (
+            f"Type de consommation: {consumption_field}\n"
+            f"Quantité: {quantity} {unit}"
+        )
+    else:
+        consumption_lines = "Type de consommation: inconnue"
+
     query = f"""
-    Supplier: {invoice_data.get("supplier", "")}
-    Energy: {invoice_data.get("energy_type", "")}
-    Consumption: {invoice_data.get("consumption_kwh", "")} kWh
+    Fournisseur: {invoice_data.get("supplier", "")}
+    {consumption_lines}
     """
 
     results = chroma.search_documents(

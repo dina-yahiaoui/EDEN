@@ -1,0 +1,32 @@
+{
+  "electricity_france": {
+    "nom": "Électricité - mix moyen France continentale (2024)",
+    "facteur_kgco2e": 0.0519,
+    "unite": "kWh",
+    "source": "ADEME Base Carbone"
+  },
+  "gas_naturel": {
+    "nom": "Gaz naturel - mix moyen",
+    "facteur_kgco2e": 2.32,
+    "unite": "m3",
+    "source": "ADEME Base Carbone"
+  },
+  "transport_routier_poids_lourd": {
+    "nom": "Transport routier de marchandises - Rigide (porteur) 12 à 20 tonnes, Diesel routier (incorporation 7% de biodiesel)",
+    "facteur_kgco2e": 0.169,
+    "unite": "t.km",
+    "source": "ADEME Base Carbone"
+  },
+  "transport_routier_utilitaire_leger": {
+    "nom": "Transport routier de marchandises - VUL (< 3,5 tonnes), Diesel routier (incorporation 7% de biodiesel)",
+    "facteur_kgco2e": 0.842,
+    "unite": "t.km",
+    "source": "ADEME Base Carbone"
+  },
+  "dechets_dae": {
+    "nom": "Déchets non dangereux en mélange (DIB) - Fin de vie moyenne, Impacts (hors émissions évitées)",
+    "facteur_kgco2e": 87.0,
+    "unite": "tonne",
+    "source": "ADEME Base Carbone"
+  }
+}

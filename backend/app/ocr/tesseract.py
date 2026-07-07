@@ -1,3 +1,9 @@
+# LEGACY : ce module n'est plus utilisé par défaut depuis la semaine 2.
+# app/ocr/gpt4o.py (GPT-4o Vision) est le moteur d'extraction actif,
+# branché sur POST /extract/ dans api/extract.py. Conservé ici pour
+# référence et comme repli local/gratuit potentiel, pas maintenu au même
+# niveau (voir docs/specifications_mvp.md, section "choix techniques").
+
 from pathlib import Path
 
 import pytesseract
