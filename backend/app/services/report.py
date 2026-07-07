@@ -32,7 +32,9 @@ Contexte réglementaire / RAG :
 Le rapport doit contenir :
 1. Résumé de la facture
 2. Données extraites
-3. Calcul des émissions CO2e
+3. Calcul des émissions CO2e, en précisant pour chaque poste son scope
+   GHG Protocol (scope 1, 2 ou 3, donné dans le champ "scope" de chaque
+   élément de "details")
 4. Lien avec ESRS E1 / climat
 5. Limites et données manquantes
 6. Recommandations

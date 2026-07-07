@@ -1,3 +1,4 @@
+import json
 import operator
 import re
 from datetime import datetime, timezone
@@ -210,15 +211,36 @@ def generation_node(state: EdenState) -> dict:
 
     invoice_number = _safe_filename_part(state["invoice_data"].get("invoice_number"))
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    report_path = REPORTS_DIR / f"rapport_csrd_{invoice_number}_{timestamp}.md"
+    base_name = f"rapport_csrd_{invoice_number}_{timestamp}"
+    report_path = REPORTS_DIR / f"{base_name}.md"
+    summary_path = REPORTS_DIR / f"{base_name}.json"
+
+    final_status = state.get("status") or "success"
 
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     report_path.write_text(report, encoding="utf-8")
 
+    # Résumé structuré à côté du rapport texte : c'est la source de données
+    # utilisée par le dashboard (suivi des extractions, indicateurs par
+    # scope, évolution temporelle) pour éviter d'avoir à re-parser le
+    # rapport en markdown.
+    summary = {
+        "invoice_number": state["invoice_data"].get("invoice_number"),
+        "supplier": state["invoice_data"].get("supplier"),
+        "invoice_date": state["invoice_data"].get("invoice_date"),
+        "status": final_status,
+        "a_verifier": state.get("a_verifier", False),
+        "raison_verification": state.get("raison_verification"),
+        "carbon_data": carbon_data,
+        "report_path": str(report_path),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+
     return {
         "report": report,
         "report_path": str(report_path),
-        "status": state.get("status") or "success",
+        "status": final_status,
         "log": [
             _log_entry(
                 "generation", "ok", f"Rapport CSRD généré et sauvegardé dans {report_path}"

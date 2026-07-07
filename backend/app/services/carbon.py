@@ -20,6 +20,14 @@ FIELD_TO_FACTOR_KEY = {
     "waste_tons": "dechets_dae",
 }
 
+# Classification GHG Protocol par champ de consommation.
+FIELD_TO_SCOPE = {
+    "electricity_kwh": "scope 2",
+    "gas_m3": "scope 1",
+    "logistics_km": "scope 3",
+    "waste_tons": "scope 3",
+}
+
 RAG_QUERY_BY_FIELD = {
     "electricity_kwh": "électricité consommation réseau France kWh",
     "gas_m3": "gaz naturel consommation m3",
@@ -139,6 +147,7 @@ def calculate_carbon_emissions(invoice_data: dict) -> dict:
             details.append(
                 {
                     "champ": field,
+                    "scope": FIELD_TO_SCOPE.get(field),
                     "quantite": quantity,
                     "emissions_kgco2e": None,
                     "source": {"origine": "aucun facteur trouvé"},
@@ -153,6 +162,7 @@ def calculate_carbon_emissions(invoice_data: dict) -> dict:
         details.append(
             {
                 "champ": field,
+                "scope": FIELD_TO_SCOPE.get(field),
                 "quantite": quantity,
                 "facteur_kgco2e_par_unite": emission_factor,
                 "unite": factor.get("unite", ""),
