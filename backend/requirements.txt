@@ -12,3 +12,4 @@ langgraph
 openai
 pandas
 requests
+pytest

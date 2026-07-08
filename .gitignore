@@ -1,6 +1,7 @@
-venv/
+.venv/
 __pycache__/
 *.pyc
 .env
 .ipynb_checkpoints/
 backend/data/reports/
+backend/knowledge/ademe/base_carbone.csv
