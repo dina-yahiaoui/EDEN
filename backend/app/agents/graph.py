@@ -1,10 +1,12 @@
 import json
+import logging
 import operator
 import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Optional, TypedDict
 
+import requests
 from langgraph.graph import END, START, StateGraph
 
 from app.ocr.gpt4o import extract_invoice_data_with_gpt4o
@@ -13,10 +15,17 @@ from app.rag.rag import index_invoice, retrieve_context
 from app.services.carbon import calculate_carbon_emissions
 from app.services.report import generate_csrd_report
 
+logger = logging.getLogger(__name__)
+
 CONSUMPTION_KEYS = list(CONSUMPTION_FIELDS)
+SCOPE_ORDER = ["scope 1", "scope 2", "scope 3"]
 
 # backend/app/agents/graph.py -> parents[2] = backend/
 REPORTS_DIR = Path(__file__).resolve().parents[2] / "data" / "reports"
+
+# URL de production n8n (workflow actif, plus besoin d'ouvrir l'éditeur n8n).
+WEBHOOK_URL = "http://localhost:5678/webhook/rapport-csrd"
+WEBHOOK_TIMEOUT_SECONDS = 5
 
 
 class EdenState(TypedDict, total=False):
@@ -48,6 +57,29 @@ def _log_entry(node: str, decision: str, raison: str) -> dict:
         "raison": raison,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
+
+def _format_scopes(details: list) -> str:
+    scopes = sorted(
+        {d["scope"] for d in details if d.get("scope") and d.get("emissions_kgco2e") is not None},
+        key=lambda s: SCOPE_ORDER.index(s) if s in SCOPE_ORDER else 99,
+    )
+    return ", ".join(s.capitalize() for s in scopes) if scopes else "Non déterminé"
+
+
+def _notify_webhook(payload: dict) -> dict:
+    """
+    Notifie un webhook n8n en fin de pipeline. Best-effort : une panne du
+    webhook (n8n non démarré, erreur réseau...) ne doit jamais faire
+    échouer le pipeline, seulement être journalisée (log + warning).
+    """
+
+    try:
+        response = requests.post(WEBHOOK_URL, json=payload, timeout=WEBHOOK_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        return {"ok": True, "detail": f"HTTP {response.status_code} : {response.text[:200]}"}
+    except requests.exceptions.RequestException as exc:
+        return {"ok": False, "detail": str(exc)}
 
 
 def extraction_node(state: EdenState) -> dict:
@@ -237,15 +269,39 @@ def generation_node(state: EdenState) -> dict:
     }
     summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    log_entries = [
+        _log_entry("generation", "ok", f"Rapport CSRD généré et sauvegardé dans {report_path}")
+    ]
+
+    # Notification best-effort vers n8n : ne doit jamais bloquer le pipeline.
+    webhook_payload = {
+        "fournisseur": state["invoice_data"].get("supplier"),
+        "co2eq_total": carbon_data.get("emissions_totales_kgco2e"),
+        "scope": _format_scopes(carbon_data.get("details") or []),
+        "report_path": str(report_path),
+        "invoice_number": state["invoice_data"].get("invoice_number"),
+    }
+    webhook_result = _notify_webhook(webhook_payload)
+
+    if webhook_result["ok"]:
+        log_entries.append(
+            _log_entry("generation", "webhook_ok", f"Webhook n8n notifié : {webhook_result['detail']}")
+        )
+    else:
+        logger.warning("Webhook n8n injoignable (%s) : %s", WEBHOOK_URL, webhook_result["detail"])
+        log_entries.append(
+            _log_entry(
+                "generation",
+                "webhook_echec",
+                f"Webhook n8n injoignable, pipeline non bloqué : {webhook_result['detail']}",
+            )
+        )
+
     return {
         "report": report,
         "report_path": str(report_path),
         "status": final_status,
-        "log": [
-            _log_entry(
-                "generation", "ok", f"Rapport CSRD généré et sauvegardé dans {report_path}"
-            )
-        ],
+        "log": log_entries,
     }
 
 
