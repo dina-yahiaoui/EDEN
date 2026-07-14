@@ -16,7 +16,7 @@ Consommation : 215 kWh
 ↓
 Recherche ADEME
 ↓
-Facteur : 0.056 kgCO2e/kWh
+Facteur : 0,0519 kgCO2e/kWh ("2024 - mix moyen", ADEME)
 ↓
 Émission calculée
 Ressource :
@@ -30,12 +30,11 @@ LangChain est une bibliothèque Python qui permet de construire des applications
 
 Dans EDEN
 
-Il servira à :
-
-appeler GPT,
-créer le RAG,
-connecter la base vectorielle,
-manipuler les prompts.
+Utilisé finalement pour une partie plus restreinte que prévu : charger les
+PDF réglementaires (`PyPDFLoader`) et découper les documents en chunks
+(`RecursiveCharacterTextSplitter`). L'appel à GPT-4o se fait directement via
+le client `openai`, et la connexion à Chroma directement via `chromadb`
+(`CloudClient`) — pas via les intégrations LangChain correspondantes.
 Ressource :
 https://python.langchain.com/
 
@@ -79,7 +78,9 @@ Dans EDEN, Chroma peut être utilisée pour stocker les documents ou facteurs d�
 
 FAISS est une bibliothèque développée par Meta pour faire de la recherche rapide dans des vecteurs.
 
-Dans EDEN, FAISS peut être une alternative à Chroma pour rechercher efficacement les facteurs d’émission les plus proches d’une donnée extraite.
+Dans EDEN, FAISS avait été envisagé comme alternative à Chroma, mais n'a
+finalement pas été retenu ni utilisé : Chroma Cloud est la seule base
+vectorielle du projet (voir `docs/architecture.md`).
 
 **Ressource :**  
 - FAISS documentation : https://faiss.ai/index.html
