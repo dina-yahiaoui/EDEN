@@ -10,6 +10,7 @@ pypdf
 langchain-text-splitters
 langgraph
 openai
+reportlab
 pandas
 requests
 pytest

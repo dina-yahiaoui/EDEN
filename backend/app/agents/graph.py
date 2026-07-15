@@ -13,7 +13,7 @@ from app.ocr.gpt4o import extract_invoice_data_with_gpt4o
 from app.rag.ingestion import CONSUMPTION_FIELDS
 from app.rag.rag import index_invoice, retrieve_context
 from app.services.carbon import calculate_carbon_emissions
-from app.services.report import generate_csrd_report
+from app.services.report import generate_csrd_report, save_report_as_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +41,7 @@ class EdenState(TypedDict, total=False):
     status: str
     error: Optional[str]
     report_path: Optional[str]
+    report_path_pdf: Optional[str]
     log: Annotated[list, operator.add]
 
 
@@ -245,12 +246,14 @@ def generation_node(state: EdenState) -> dict:
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     base_name = f"rapport_csrd_{invoice_number}_{timestamp}"
     report_path = REPORTS_DIR / f"{base_name}.md"
+    report_path_pdf = REPORTS_DIR / f"{base_name}.pdf"
     summary_path = REPORTS_DIR / f"{base_name}.json"
 
     final_status = state.get("status") or "success"
 
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     report_path.write_text(report, encoding="utf-8")
+    save_report_as_pdf(report, report_path_pdf)
 
     # Résumé structuré à côté du rapport texte : c'est la source de données
     # utilisée par le dashboard (suivi des extractions, indicateurs par
@@ -265,12 +268,17 @@ def generation_node(state: EdenState) -> dict:
         "raison_verification": state.get("raison_verification"),
         "carbon_data": carbon_data,
         "report_path": str(report_path),
+        "report_path_pdf": str(report_path_pdf),
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
     summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
 
     log_entries = [
-        _log_entry("generation", "ok", f"Rapport CSRD généré et sauvegardé dans {report_path}")
+        _log_entry(
+            "generation",
+            "ok",
+            f"Rapport CSRD généré et sauvegardé dans {report_path} (+ PDF {report_path_pdf})",
+        )
     ]
 
     # Notification best-effort vers n8n : ne doit jamais bloquer le pipeline.
@@ -279,6 +287,7 @@ def generation_node(state: EdenState) -> dict:
         "co2eq_total": carbon_data.get("emissions_totales_kgco2e"),
         "scope": _format_scopes(carbon_data.get("details") or []),
         "report_path": str(report_path),
+        "report_path_pdf": str(report_path_pdf),
         "invoice_number": state["invoice_data"].get("invoice_number"),
     }
     webhook_result = _notify_webhook(webhook_payload)
@@ -300,6 +309,7 @@ def generation_node(state: EdenState) -> dict:
     return {
         "report": report,
         "report_path": str(report_path),
+        "report_path_pdf": str(report_path_pdf),
         "status": final_status,
         "log": log_entries,
     }

@@ -50,6 +50,7 @@ async def extract_invoice(file: UploadFile = File(...)):
             "rag": final_state.get("rag_result"),
             "report": final_state.get("report"),
             "report_path": final_state.get("report_path"),
+            "report_path_pdf": final_state.get("report_path_pdf"),
             "log": final_state.get("log", []),
         }
 

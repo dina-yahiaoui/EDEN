@@ -85,6 +85,7 @@ def summaries_to_dataframe(summaries: list[dict]) -> pd.DataFrame:
                 "CO2eq total (kg)": carbon.get("emissions_totales_kgco2e"),
                 "Scopes couverts": scopes_covered(details),
                 "Rapport": summary.get("report_path") or "—",
+                "Rapport PDF": summary.get("report_path_pdf") or "—",
             }
         )
     return pd.DataFrame(rows)
@@ -173,6 +174,15 @@ def page_upload() -> None:
             if report_text:
                 with st.expander("Voir le rapport complet"):
                     st.markdown(report_text)
+
+            report_path_pdf = result.get("report_path_pdf")
+            if report_path_pdf and Path(report_path_pdf).exists():
+                st.download_button(
+                    "Télécharger le rapport PDF",
+                    data=Path(report_path_pdf).read_bytes(),
+                    file_name=Path(report_path_pdf).name,
+                    mime="application/pdf",
+                )
 
         with st.expander("Log de transitions du graphe"):
             st.dataframe(pd.DataFrame(result.get("log") or []), use_container_width=True)

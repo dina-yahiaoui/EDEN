@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.api.extract import router as extract_router
+from app.api.reports import router as reports_router
 
 app = FastAPI(
     title="EDEN API",
@@ -9,6 +10,7 @@ app = FastAPI(
 
 # Ajout des routes de l'API
 app.include_router(extract_router)
+app.include_router(reports_router)
 
 
 @app.get("/health", tags=["Health"])
