@@ -14,6 +14,7 @@ les résumés déjà écrits sur disque et n'ont pas besoin de l'API.
 """
 
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -26,6 +27,7 @@ API_URL = "http://localhost:8000"
 
 # frontend/app.py -> parents[1] = racine du projet -> backend/data/reports/
 REPORTS_DIR = Path(__file__).resolve().parents[1] / "backend" / "data" / "reports"
+ASSETS_DIR = Path(__file__).resolve().parent / "assets"
 
 # Couleurs fixes par scope GHG Protocol (jamais de palette auto-générée) :
 # scope 1 = combustion directe, scope 2 = énergie achetée, scope 3 = chaîne de valeur.
@@ -35,6 +37,88 @@ SCOPE_COLORS = {
     "scope 3": "#059669",
 }
 SCOPE_ORDER = ["scope 1", "scope 2", "scope 3"]
+
+# Palette identité Eden pour les cartes de métriques (distincte de SCOPE_COLORS,
+# utilisée uniquement pour le graphique Altair) : vert forêt/vert clair/doré terre.
+SCOPE_CARD_COLORS = {
+    "scope 1": "#2D6A4F",
+    "scope 2": "#52B788",
+    "scope 3": "#D8A657",
+}
+
+
+def render_header() -> None:
+    """
+    Bannière Eden (logo réaliste, titre + sous-titre, tous centrés sur
+    fond en dégradé vert animé), identique sur les 4 pages.
+
+    Le HTML/CSS est assemblé sur une seule ligne (pas de retours à la ligne
+    ni d'indentation) : le Markdown de Streamlit interprète les lignes
+    indentées de 4 espaces ou plus comme un bloc de code, ce qui cassait un
+    précédent rendu multi-lignes (le SVG s'affichait, mais le texte suivant
+    se retrouvait affiché en brut dans un bloc de code). Le CSS n'a pas
+    besoin de retours à la ligne pour être valide, donc ce n'est pas une
+    perte de lisibilité fonctionnelle, juste au niveau du code source.
+    """
+
+    logo_svg = (ASSETS_DIR / "logo.svg").read_text(encoding="utf-8")
+    # Le fichier déclare une taille intrinsèque de 320x320 (pensée pour un
+    # usage isolé) ; on la réduit à la taille adaptée à la bannière du
+    # dashboard, le viewBox garantissant que les proportions restent correctes.
+    logo_svg = logo_svg.replace('width="320" height="320"', 'width="140" height="140"', 1)
+    logo_svg = " ".join(logo_svg.split())
+
+    logo_co2_svg = (ASSETS_DIR / "logo_co2.svg").read_text(encoding="utf-8")
+    # Même logique : 220x220 intrinsèque, réduit à ~110px (un peu plus petit
+    # que le globe à droite pour ne pas déséquilibrer la bannière).
+    logo_co2_svg = logo_co2_svg.replace('width="220" height="220"', 'width="110" height="110"', 1)
+    logo_co2_svg = " ".join(logo_co2_svg.split())
+
+    header_html = (
+        "<style>"
+        "@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap');"
+        "@keyframes edenGradient {0% {background-position:0% 50%;} "
+        "50% {background-position:100% 50%;} 100% {background-position:0% 50%;}}"
+        "[data-testid='stHeader'] {background-color: #D9ECE7 !important;}"
+        ".eden-header {position: relative; background: linear-gradient(120deg, #0B2818, #1B4332, "
+        "#2D6A4F, #40916C, #1B4332); background-size: 300% 300%; "
+        "animation: edenGradient 8s ease infinite; border-radius: 16px; padding: 48px 32px; "
+        "margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center;}"
+        ".eden-header-logo {position: absolute; right: 32px; top: 50%; transform: translateY(-50%); "
+        "flex-shrink: 0;}"
+        ".eden-header-logo-co2 {position: absolute; left: 32px; top: 50%; transform: translateY(-50%); "
+        "flex-shrink: 0;}"
+        ".eden-header-text {display: flex; flex-direction: column; align-items: center; "
+        "justify-content: center; text-align: center;}"
+        ".eden-title {font-family: 'Playfair Display', serif; font-style: italic; font-size: 68px; "
+        "font-weight: 700; color: #F1F8F4; line-height: 1.1;}"
+        ".eden-subtitle {font-family: sans-serif; font-size: 16px; color: #B7D9C7; margin-top: 6px;}"
+        "</style>"
+        '<div class="eden-header">'
+        f'<div class="eden-header-logo-co2">{logo_co2_svg}</div>'
+        '<div class="eden-header-text">'
+        '<div class="eden-title">Eden</div>'
+        '<div class="eden-subtitle">Pilotage carbone CSRD</div>'
+        "</div>"
+        f'<div class="eden-header-logo">{logo_svg}</div>'
+        "</div>"
+    )
+    st.markdown(header_html, unsafe_allow_html=True)
+
+
+def render_scope_card(label: str, value: float, color: str) -> str:
+    """Carte de métrique avec bordure gauche colorée par scope GHG Protocol.
+
+    HTML sur une seule ligne pour la même raison que render_header()."""
+
+    return (
+        f'<div style="border-left: 3px solid {color}; padding: 0.5rem 1rem; '
+        'background-color: #FFFFFF; border-radius: 4px;">'
+        '<div style="font-size: 12px; color: #40655A; text-transform: uppercase; '
+        f'letter-spacing: 0.03em;">{label}</div>'
+        f'<div style="font-size: 22px; font-weight: 700; color: #1B4332;">{value:.2f} kg</div>'
+        '</div>'
+    )
 
 
 def load_summaries() -> list[dict]:
@@ -108,6 +192,7 @@ def render_carbon_table(details: list[dict]) -> pd.DataFrame:
 
 
 def page_upload() -> None:
+    render_header()
     st.header("Traiter une nouvelle facture")
     st.caption(f"Appelle l'API FastAPI sur {API_URL}/extract/")
 
@@ -189,6 +274,7 @@ def page_upload() -> None:
 
 
 def page_suivi() -> None:
+    render_header()
     st.header("Suivi des extractions")
 
     summaries = load_summaries()
@@ -200,6 +286,7 @@ def page_suivi() -> None:
 
 
 def page_scopes() -> None:
+    render_header()
     st.header("Indicateurs CO2 par scope (GHG Protocol)")
 
     summaries = load_summaries()
@@ -214,6 +301,15 @@ def page_scopes() -> None:
             emissions = detail.get("emissions_kgco2e")
             if scope in totals and emissions is not None:
                 totals[scope] += emissions
+
+    cols = st.columns(3)
+    for col, scope in zip(cols, SCOPE_ORDER):
+        with col:
+            st.markdown(
+                render_scope_card(scope.capitalize(), totals[scope], SCOPE_CARD_COLORS[scope]),
+                unsafe_allow_html=True,
+            )
+    st.write("")
 
     df_scope = pd.DataFrame({"Scope": SCOPE_ORDER, "CO2eq (kg)": [totals[s] for s in SCOPE_ORDER]})
 
@@ -237,6 +333,7 @@ def page_scopes() -> None:
 
 
 def page_evolution() -> None:
+    render_header()
     st.header("Évolution temporelle des émissions CO2e")
 
     summaries = load_summaries()
@@ -279,7 +376,20 @@ def page_evolution() -> None:
 
 
 def main() -> None:
-    st.set_page_config(page_title="EDEN — Suivi carbone", layout="wide")
+    st.set_page_config(
+        page_title="Eden — Pilotage carbone CSRD",
+        page_icon=str(ASSETS_DIR / "favicon.svg"),
+        layout="wide",
+    )
+    # Filet de sécurité si le thème natif (.streamlit/config.toml) n'est pas
+    # pris en compte pour une raison quelconque (cache navigateur, config
+    # ignorée...) : force le fond via CSS. Doit être le tout premier appel
+    # Streamlit après set_page_config (seul appel autorisé avant lui).
+    # Une seule ligne, sans indentation : le Markdown de Streamlit interprète
+    # les lignes indentées de 4+ espaces comme un bloc de code, ce qui
+    # afficherait ce CSS en texte brut au lieu de l'appliquer (bug déjà
+    # rencontré sur render_header()).
+    st.markdown("<style>.stApp {background-color: #D9ECE7 !important;}</style>", unsafe_allow_html=True)
 
     st.sidebar.title("EDEN")
     st.sidebar.caption("Agent CSRD et décarbonation")

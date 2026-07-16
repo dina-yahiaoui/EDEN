@@ -1,0 +1,32 @@
+<svg width="320" height="320" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="ocean" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#4A90C2"/>
+      <stop offset="60%" stop-color="#1E5F8C"/>
+      <stop offset="100%" stop-color="#0D3A5C"/>
+    </radialGradient>
+  </defs>
+
+  <circle cx="100" cy="100" r="90" fill="url(#ocean)"/>
+
+  <path d="M85 45C92 42 100 44 102 50C104 56 98 58 94 62C98 64 96 70 90 70C84 70 82 64 78 62C74 60 76 54 80 50C82 48 82 47 85 45Z" fill="#5A8F3C"/>
+  <path d="M88 72C96 70 108 74 110 84C112 96 106 110 98 116C90 122 82 116 80 106C78 96 82 86 84 80C85 77 86 74 88 72Z" fill="#6B9C47"/>
+  <path d="M108 55C124 50 148 54 158 66C166 76 160 86 148 84C138 82 132 88 124 84C116 80 118 68 112 62C110 60 109 58 108 55Z" fill="#5A8F3C"/>
+  <path d="M150 90C160 88 170 94 168 102C166 110 156 112 150 108C144 104 144 96 150 90Z" fill="#7BA85A"/>
+  <path d="M40 70C50 66 62 70 64 78C66 86 58 92 50 90C42 88 38 92 34 86C30 80 34 74 40 70Z" fill="#5A8F3C"/>
+  <path d="M42 96C50 94 58 98 58 106C58 116 50 128 42 130C34 132 30 122 32 112C34 104 38 98 42 96Z" fill="#6B9C47"/>
+
+  <path d="M20 60C40 30 90 20 120 30" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.25"/>
+  <path d="M140 140C160 150 175 140 180 120" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.2"/>
+
+  <circle cx="100" cy="100" r="90" fill="none" stroke="#0D3A5C" stroke-width="1" stroke-opacity="0.4"/>
+
+  <g transform="translate(100, 8)">
+    <path d="M0 0C0 0 0 -14 0 -22" stroke="#1B4332" stroke-width="4" stroke-linecap="round"/>
+    <path d="M0 -8C0 -8 -18 -14 -22 -26C-22 -26 -6 -28 0 -14C0 -14 0 -26 12 -32C12 -32 22 -20 12 -10C7 -5 0 -8 0 -8Z" fill="#52B788"/>
+    <path d="M0 -8C0 -8 18 -12 24 -24C24 -24 8 -28 2 -14" fill="#74C69D"/>
+  </g>
+
+  <circle cx="176" cy="56" r="5" fill="#D8A657"/>
+  <circle cx="24" cy="150" r="3" fill="#95D5B2" fill-opacity="0.6"/>
+</svg>
